@@ -8,11 +8,12 @@ int main(void) {
   printf("Enter number of entries in table: ");
   scanf("%d", &n);
 
+  getchar();
+
   for (i = 1; i <= n; i++) {
     if (i % 24 == 0) {
-      while (getchar() != '\n') {
-        printf("Press Enter to continue...");
-      }
+      printf("Press Enter to continue...\n");
+      getchar();
     }
     printf("%10d%10d\n", i, i * i);
   }
