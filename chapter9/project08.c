@@ -45,21 +45,61 @@ repeatedly, keeping track of the number of wins and losses and displaying the
 random numbers. See the deal.c program in Section 8.2 for an example of how to
 call rand and the related srand function.
 */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 int roll_dice(void);
+bool play_game(void);
 
 int main(void) {
+  char c;
+  int wins = 0;
+  int losses = 0;
   srand((unsigned)time(NULL));
 
-  for (int i = 0; i < 15; i++) {
-    printf("number = %d\n", roll_dice());
-  }
+  // Play game repeatedly
+  do {
+    bool result = play_game();
+    result ? wins++ : losses++;
+    printf("\nPlay again? ");
+    scanf(" %c", &c);
+  } while (c == 'y' || c == 'Y');
+
+  printf("Wins: %d Losses: %d\n", wins, losses);
+
   return 0;
 }
 
 int roll_dice(void) {
+  // sum two dice rolls
   return ((rand() % 6) + 1) + ((rand() % 6) + 1);
+}
+
+bool play_game(void) {
+  int first_roll = roll_dice();
+  printf("\nYou rolled %d\n", first_roll);
+
+  if (first_roll == 7 || first_roll == 11) {
+    printf("You win!\n");
+    return true;
+  } else if (first_roll == 2 || first_roll == 3 || first_roll == 12) {
+    printf("You lose!\n");
+    return false;
+  }
+  printf("Your point is %d\n", first_roll);
+  int point = first_roll;
+
+  while (1) {
+    int next_roll = roll_dice();
+    printf("You rolled %d\n", next_roll);
+    if (next_roll == point) {
+      printf("You win!\n");
+      return true;
+    } else if (next_roll == 7) {
+      printf("You lose!\n");
+      return false;
+    }
+  }
 }
