@@ -23,7 +23,7 @@ void analyze_hand(int num_in_rank[NUM_RANKS], int num_in_suit[NUM_SUITS]);
 void print_result(void);
 
 /***********************************************************
- * main: Calls readcards, analyzehand, and print result *
+ * main: Calls readcards, analyze_hand, and print result *
  * repeatedly. *
  **********************************************************/
 int main(void) {
@@ -165,6 +165,7 @@ void read_cards(int num_in_rank[NUM_RANKS], int num_in_suit[NUM_SUITS]) {
 void analyze_hand(int num_in_rank[NUM_RANKS], int num_in_suit[NUM_SUITS]) {
   int num_consec = 0;
   int rank, suit;
+  straight = false;
   flush = false;
   four = false;
   three = false;
