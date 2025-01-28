@@ -9,12 +9,14 @@ struct part {
     int number;
     char name[NAME_LEN + 1];
     int on_hand;
+    double price;
 };
 
 int find_part(int number, int num_parts, struct part* inventory);
 void insert(int* num_parts, struct part* inventory);
 void search(int num_parts, struct part* inventory);
 void update(int num_parts, struct part* inventory);
+void adjust(int num_parts, struct part* inventory);
 void print(int num_parts, struct part* inventory);
 
 /*************************************************************
@@ -44,6 +46,9 @@ int main(void)
             break;
         case 'u':
             update(num_parts, inventory);
+            break;
+        case 'a':
+            adjust(num_parts, inventory);
             break;
         case 'p':
             print(num_parts, inventory);
@@ -111,6 +116,8 @@ void insert(int* num_parts, struct part* inventory)
     read_line(inventory[i].name, NAME_LEN);
     printf("Enter quantity on hand: ");
     scanf("%d", &inventory[i].on_hand);
+    printf("Enter part price: ");
+    scanf("%lf", &inventory[i].price);
     (*num_parts)++;
 }
 
@@ -130,6 +137,7 @@ void search(int num_parts, struct part* inventory)
     if (i >= 0) {
         printf("Part name: %s\n", inventory[i].name);
         printf("Quantity on hand: %d\n", inventory[i].on_hand);
+        printf("Part price: %.2lf\n", inventory[i].price);
     } else
         printf("Part not found.\n");
 }
@@ -156,6 +164,29 @@ void update(int num_parts, struct part* inventory)
         printf("Part not found.\n");
 }
 
+/********************************************************
+ * adjust: Prompts the user to enter a part number.     *
+ *         Prints an error message if the part doesn't  *
+ *         exist; otherwise, prompts the user to enter  *
+ *         a new price and updates the                  *
+ *         database.                                    *
+ ********************************************************/
+void adjust(int num_parts, struct part* inventory)
+{
+    int i, number, new_price;
+
+    printf("Enter part number: ");
+    scanf("%d", &number);
+    i = find_part(number, num_parts, inventory);
+    if (i >= 0) {
+        printf("Enter new price: ");
+        scanf("%d", &new_price);
+        inventory[i].price = new_price;
+    } else {
+        printf("Part not found.\n");
+    }
+}
+
 /************************************************************
  * print: Prints a listing of all parts in the database,    *
  *        showing the part number, part name, and           *
@@ -168,8 +199,8 @@ void print(int num_parts, struct part* inventory)
     int i;
 
     printf("Part Number   Part Name        "
-           "Quantity on Hand\n");
+           "Quantity on Hand        Price\n");
     for (i = 0; i < num_parts; i++)
-        printf("%7d       %-25s%d\n", inventory[i].number,
-            inventory[i].name, inventory[i].on_hand);
+        printf("%7d       %-25s%-16d%.2lf\n", inventory[i].number,
+            inventory[i].name, inventory[i].on_hand, inventory[i].price);
 }
