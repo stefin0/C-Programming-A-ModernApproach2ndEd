@@ -18,6 +18,7 @@ void search(int num_parts, struct part* inventory);
 void update(int num_parts, struct part* inventory);
 void adjust(int num_parts, struct part* inventory);
 void print(int num_parts, struct part* inventory);
+int cmp_part(const void* a, const void* b);
 
 /*************************************************************
  * main: Prompts the user to enter an operation code,        *
@@ -114,28 +115,16 @@ void insert(int* num_parts, struct part** inventory, int* max_parts)
         return;
     }
 
-    // Determine index for part_number (numerical order)
-    int i, j;
-    for (i = 0; i < *num_parts; i++) {
-        if ((*inventory)[i].number > part_number) {
-            break;
-        }
-    }
-    // Move all parts down 1 position to maintain order
-    for (j = *num_parts; j > i; j--) {
-        (*inventory)[j] = (*inventory)[j - 1];
-    }
-
-    (*inventory)[i].number = part_number;
+    (*inventory)[*num_parts].number = part_number;
 
     printf("Enter part name: ");
-    read_line((*inventory)[i].name, NAME_LEN);
+    read_line((*inventory)[*num_parts].name, NAME_LEN);
 
     printf("Enter quantity on hand: ");
-    scanf("%d", &(*inventory)[i].on_hand);
+    scanf("%d", &(*inventory)[*num_parts].on_hand);
 
     printf("Enter part price: ");
-    scanf("%lf", &(*inventory)[i].price);
+    scanf("%lf", &(*inventory)[*num_parts].price);
 
     (*num_parts)++;
 }
@@ -192,17 +181,32 @@ void update(int num_parts, struct part* inventory)
  ********************************************************/
 void adjust(int num_parts, struct part* inventory)
 {
-    int i, number, new_price;
+    int i, number;
+    double new_price;
 
     printf("Enter part number: ");
     scanf("%d", &number);
     i = find_part(number, num_parts, inventory);
     if (i >= 0) {
         printf("Enter new price: ");
-        scanf("%d", &new_price);
+        scanf("%lf", &new_price);
         inventory[i].price = new_price;
     } else {
         printf("Part not found.\n");
+    }
+}
+
+int cmp_part(const void* a, const void* b)
+{
+    const struct part* a1 = a;
+    const struct part* b1 = b;
+
+    if (a1->number < b1->number) {
+        return -1;
+    } else if (a1->number > b1->number) {
+        return 1;
+    } else {
+        return 0;
     }
 }
 
@@ -216,6 +220,8 @@ void adjust(int num_parts, struct part* inventory)
 void print(int num_parts, struct part* inventory)
 {
     int i;
+
+    qsort(inventory, num_parts, sizeof(struct part), cmp_part);
 
     printf("Part Number   Part Name        "
            "Quantity on Hand        Price\n");
